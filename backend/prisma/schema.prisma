@@ -1,0 +1,29 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  first_name String?
+  last_name  String?
+  email      String   @unique
+  password   String
+  createdAt  DateTime @default(now())
+  todos      Todo[]
+}
+
+model Todo {
+  id             String    @id @default(uuid())
+  task           String
+  completed      Boolean   @default(false)
+  completed_time DateTime?
+  created_at     DateTime  @default(now())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Environment variables — NEVER commit secrets
+.env
+.env.*
+backend/.env
+frontend/.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Build output
+build/
+dist/
+frontend/build/
+
+# Prisma generated
+prisma/generated/
+
+# Docker volumes
+docker-data/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
+DevOps_Training_Lab_Project.docx.pdf
