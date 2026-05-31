@@ -1,0 +1,56 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  # Set this in Pipeline → Variables (or here as a non-secret value)
+  # Example: https://your-backend.azurewebsites.net/api
+  REACT_APP_API_BASE_URL: $(REACT_APP_API_BASE_URL)
+
+stages:
+  - stage: Build
+    displayName: Build React App
+    jobs:
+      - job: BuildJob
+        displayName: Build
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: Install Node.js
+
+          - script: |
+              cd frontend
+              npm install
+              npm run build
+            displayName: Install and Build React App
+            env:
+              REACT_APP_API_BASE_URL: $(REACT_APP_API_BASE_URL)
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: 'frontend/build'
+              artifactName: 'frontend-build'
+            displayName: Publish frontend build artifact
+
+  - stage: Deploy
+    displayName: Deploy to Static Web App
+    dependsOn: Build
+    jobs:
+      - job: DeployJob
+        displayName: Deploy
+        steps:
+          - download: current
+            artifact: frontend-build
+
+          - task: AzureStaticWebApp@0
+            inputs:
+              app_location: '$(Pipeline.Workspace)/frontend-build'
+              output_location: ''
+              skip_app_build: true
+              azure_static_web_apps_api_token: $(AZURE_STATIC_WEBAPP_TOKEN)
+            displayName: Deploy to Azure Static Web App
